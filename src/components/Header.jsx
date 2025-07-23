@@ -4,12 +4,9 @@ import { AppContext } from '../context/AppContext';
 
 const Header = () => {
   const { location, setLocation, language, setLanguage, translations } = useContext(AppContext);
-  const [inputValue, setInputValue] = useState(location?.name || '');
+  const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-
-  useEffect(() => {
-    setInputValue(location?.name || '');
-  }, [location]);
+  const [hasUserTyped, setHasUserTyped] = useState(false);
 
   useEffect(() => {
     if (inputValue.length > 2) {
@@ -24,6 +21,8 @@ const Header = () => {
 
   const handleSelect = (lat, lon, name) => {
     setLocation({ latitude: lat, longitude: lon, name });
+    setInputValue(name); // Update input with selected name
+    setHasUserTyped(false); // Optional: reset typing state
     setSuggestions([]);
   };
 
@@ -35,12 +34,9 @@ const Header = () => {
       </div>
 
       <nav className="flex gap-4 text-white">
-        <Link to="/" className="hover:underline">Start</Link>
         <Link to="/home" className="hover:underline">{translations.home}</Link>
         <Link to="/my-crops" className="hover:underline">{translations.myCrops}</Link>
         <Link to="/notifications" className="hover:underline">{translations.notifications}</Link>
-        <Link to="/login" className="hover:underline">{translations.login}</Link>
-        <Link to="/signup" className="hover:underline">{translations.signup}</Link>
       </nav>
 
       <div className="relative w-full md:w-64">
@@ -48,8 +44,11 @@ const Header = () => {
           type="text"
           className="w-full p-2 rounded text-black"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder={translations.locationPlaceholder || 'Enter location'}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setHasUserTyped(true);
+          }}
+          placeholder={translations.locationPlaceholder || "Search location"}
         />
         {suggestions.length > 0 && (
           <ul className="absolute bg-white text-black w-full shadow rounded z-10">
@@ -75,6 +74,15 @@ const Header = () => {
         <option value="ta">தமிழ்</option>
         <option value="hi">हिन्दी</option>
       </select>
+
+      <nav className="flex gap-4 text-white">
+        <Link to="/login" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          {translations.login}
+        </Link>
+        <Link to="/signup" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          {translations.signup}
+        </Link>
+      </nav>
     </header>
   );
 };
