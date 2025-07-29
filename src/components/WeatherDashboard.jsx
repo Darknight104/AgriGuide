@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
+import { motion } from 'framer-motion';
 
 const WeatherDashboard = () => {
   const { location, translations } = useContext(AppContext);
@@ -21,27 +22,51 @@ const WeatherDashboard = () => {
   }, [location]);
 
   return (
-    <div className="bg-white p-4 rounded shadow mb-4">
-      <h2 className="text-lg font-bold mb-2">{translations.currentWeather}</h2>
+    <motion.div
+      className="bg-white p-5 rounded-xl shadow-lg mb-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+      <h2 className="text-xl font-semibold mb-4 text-green-700">
+        {translations.currentWeather || 'Current Weather'}
+      </h2>
+
       {weather ? (
-        <div className="flex justify-between text-center">
-          <div>
-            <p className="font-semibold">{translations.temperature}</p>
-            <p>{weather.temperature}°C</p>
-          </div>
-          <div>
-            <p className="font-semibold">{translations.windSpeed}</p>
-            <p>{weather.windspeed} km/h</p>
-          </div>
-          <div>
-            <p className="font-semibold">{translations.time}</p>
-            <p>{new Date(weather.time).toLocaleTimeString()}</p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <motion.div
+            className="p-4 bg-blue-50 rounded-lg shadow-sm"
+            whileHover={{ scale: 1.05 }}
+          >
+            <p className="text-sm text-gray-600">{translations.temperature || 'Temperature'}</p>
+            <p className="text-2xl font-bold text-blue-600">🌡️ {weather.temperature}°C</p>
+          </motion.div>
+          <motion.div
+            className="p-4 bg-green-50 rounded-lg shadow-sm"
+            whileHover={{ scale: 1.05 }}
+          >
+            <p className="text-sm text-gray-600">{translations.windSpeed || 'Wind Speed'}</p>
+            <p className="text-2xl font-bold text-green-600">💨 {weather.windspeed} km/h</p>
+          </motion.div>
+          <motion.div
+            className="p-4 bg-yellow-50 rounded-lg shadow-sm"
+            whileHover={{ scale: 1.05 }}
+          >
+            <p className="text-sm text-gray-600">{translations.date || 'Date'}</p>
+            <p className="text-xl font-semibold text-yellow-600">
+              📅 {new Date(weather.time).toLocaleDateString(undefined, {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </p>
+          </motion.div>
         </div>
       ) : (
-        <p>{translations.noWeatherData}</p>
+        <p className="text-gray-500">{translations.noWeatherData || 'No weather data available'}</p>
       )}
-    </div>
+    </motion.div>
   );
 };
 

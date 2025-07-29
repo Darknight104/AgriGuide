@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
   const { location, setLocation, language, setLanguage, translations } = useContext(AppContext);
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [hasUserTyped, setHasUserTyped] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (inputValue.length > 2) {
@@ -21,22 +23,21 @@ const Header = () => {
 
   const handleSelect = (lat, lon, name) => {
     setLocation({ latitude: lat, longitude: lon, name });
-    setInputValue(name); // Update input with selected name
-    setHasUserTyped(false); // Optional: reset typing state
+    setInputValue(name);
     setSuggestions([]);
   };
 
   return (
     <header className="bg-green-700 text-white p-4 flex flex-col md:flex-row justify-between items-center gap-2">
-      <div className="text-xl font-bold">
+      <div className="text-xl font-bold hover:text-green-300 transition">
         🌱 {translations.appName || 'Smart Agri-Weather'}
         <p className="text-sm font-normal">{translations.slogan}</p>
       </div>
 
       <nav className="flex gap-4 text-white">
-        <Link to="/home" className="hover:underline">{translations.home}</Link>
-        <Link to="/my-crops" className="hover:underline">{translations.myCrops}</Link>
-        <Link to="/notifications" className="hover:underline">{translations.notifications}</Link>
+        <Link to="/home" className="px-6 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">{translations.home}</Link>
+        <Link to="/my-crops" className="px-6 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">{translations.myCrops}</Link>
+        <Link to="/notifications" className="px-6 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">{translations.notifications}</Link>
       </nav>
 
       <div className="relative w-full md:w-64">
@@ -44,14 +45,11 @@ const Header = () => {
           type="text"
           className="w-full p-2 rounded text-black"
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setHasUserTyped(true);
-          }}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder={translations.locationPlaceholder || "Search location"}
         />
         {suggestions.length > 0 && (
-          <ul className="absolute bg-white text-black w-full shadow rounded z-10">
+          <ul className="absolute bg-white text-black w-full shadow rounded z-10 hover:shadow-lg">
             {suggestions.map((s, i) => (
               <li
                 key={i}
@@ -64,16 +62,6 @@ const Header = () => {
           </ul>
         )}
       </div>
-
-      <select
-        className="ml-2 p-1 rounded text-black"
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
-      >
-        <option value="en">English</option>
-        <option value="ta">தமிழ்</option>
-        <option value="hi">हिन्दी</option>
-      </select>
 
       <nav className="flex gap-4 text-white">
         <Link to="/login" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
